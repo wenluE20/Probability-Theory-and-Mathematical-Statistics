@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+# 定义参数
+p0 = 0.10  # 标称次品率
+alpha = 0.05  # 95% 信度下的显著性水平
+beta = 0.10  # 90% 信度下的显著性水平
+E = 0.01  # 允许的误差范围
+
+# 计算95%信度下的样本量
+Z_alpha_2 = norm.ppf(1 - alpha / 2)
+n_95 = ((Z_alpha_2 * (p0 * (1 - p0))**0.5) / E)**2
+
+# 计算90%信度下的样本量
+Z_beta_2 = norm.ppf(1 - beta / 2)
+n_90 = ((Z_beta_2 * (p0 * (1 - p0))**0.5) / E)**2
+
+# 样本量与置信区间宽度的关系
+sample_sizes = np.arange(50, 1000, 50)
+ci_widths_95 = [norm.ppf(1 - alpha / 2) * np.sqrt(p0 * (1 - p0) / size) for size in sample_sizes]
+ci_widths_90 = [norm.ppf(1 - beta / 2) * np.sqrt(p0 * (1 - p0) / size) for size in sample_sizes]
+
+plt.figure(figsize=(10, 6))
+plt.plot(sample_sizes, ci_widths_95, label='95% CI Width')
+plt.plot(sample_sizes, ci_widths_90, label='90% CI Width')
+plt.xlabel('Sample Size')
+plt.ylabel('Confidence Interval Width')
+plt.title('Sample Size vs. Confidence Interval Width')
+plt.legend()
+plt.grid(True)
+plt.show()
