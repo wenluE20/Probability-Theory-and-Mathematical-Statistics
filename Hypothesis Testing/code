@@ -1,0 +1,44 @@
+from scipy.stats import norm
+
+# 定义参数
+p0 = 0.10  # 标称次品率
+alpha = 0.05  # 95% 信度下的显著性水平
+beta = 0.10  # 90% 信度下的显著性水平
+E = 0.01  # 允许的误差范围
+
+# 计算95%信度下的样本量
+Z_alpha_2 = norm.ppf(1 - alpha / 2)
+n_95 = ((Z_alpha_2 * (p0 * (1 - p0))**0.5) / E)**2
+
+# 计算90%信度下的样本量
+Z_beta_2 = norm.ppf(1 - beta / 2)
+n_90 = ((Z_beta_2 * (p0 * (1 - p0))**0.5) / E)**2
+
+# 打印结果
+print(f"在95%信度下，所需的最小样本量为: {int(n_95)}")
+print(f"在90%信度下，所需的最小样本量为: {int(n_90)}")
+
+# 假设检验函数
+def hypothesis_test(sample_size, p0, alpha):
+    # 生成样本数据（这里使用p0作为实际次品率进行模拟）
+    samples = [1 if norm.rvs() < p0 else 0 for _ in range(sample_size)]
+    sample_mean = sum(samples) / sample_size
+    
+    # 计算95%置信区间
+    Z = norm.ppf(1 - alpha / 2)
+    lower_bound = sample_mean - Z * (p0 * (1 - p0) / sample_size)**0.5
+    upper_bound = sample_mean + Z * (p0 * (1 - p0) / sample_size)**0.5
+    
+    # 判断是否接收
+    if lower_bound > p0:
+        return "接收零配件"
+    else:
+        return "拒收零配件"
+
+# 进行95%信度下的假设检验
+result_95 = hypothesis_test(int(n_95), p0, alpha)
+print(f"在95%信度下，假设检验结果: {result_95}")
+
+# 进行90%信度下的假设检验
+result_90 = hypothesis_test(int(n_90), p0, beta)
+print(f"在90%信度下，假设检验结果: {result_90}")
